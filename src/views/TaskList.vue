@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import LBlock from '@/components/LBlock.vue';
 import { tasklist } from './Task/taskAction';
 import SnackBar from '@/components/SnackBar.vue';
+import modalView from '@/components/modalView.vue';
 
 // タスクテーブル定義
 const itemsPerPage = ref(10);
@@ -22,12 +23,23 @@ const headers = ref([
 const {
     init,
     tasks,
+    addTask,
     updated,
     deleted,
     completeTask,
     snackOpen,
     snackText,
-    snackColor
+    snackColor,
+    dialog,
+    openDialog,
+    closeDialog,
+    taskName,
+    taskDetail,
+    deadLine,
+    createTask,
+    form,
+    required,
+    dateValidator,
 } = tasklist();
 
 const handleTaskCheck = (taskId: number) => {
@@ -40,17 +52,15 @@ onMounted(() => {
 </script>
 <template>
     <l-block title="Task" subtitle="タスク一覧">
-        <v-data-table 
-            v-model:items-per-page="itemsPerPage" 
-            :headers="headers" 
-            :items="tasks"
-            :items-per-page-options="pages" 
-            items-per-page-text="表示行数" 
-            class="elevation-1 bg-grey-lighten-4 pt-4"
-            height="500"
-        >
+        <template #button>
+            <v-btn color="red-lighten-1" elevation="2" @click="addTask">
+                <v-icon class="pr-2">mdi-plus</v-icon>追加</v-btn>
+        </template>
+        <v-data-table v-model:items-per-page="itemsPerPage" :headers="headers" :items="tasks"
+            :items-per-page-options="pages" items-per-page-text="表示行数" class="elevation-1 bg-grey-lighten-4 pt-4"
+            height="500">
             <template v-slot:[`item.check`]="{ item }">
-                <v-checkbox v-model="item.check" @change="handleTaskCheck(item.id)"/>
+                <v-checkbox v-model="item.check" class="checkbox" @change="handleTaskCheck(item.id)" />
             </template>
             <template v-slot:[`item.detail`]="{ item }">
                 <span class="truncate">{{ item.detail }}</span>
@@ -58,6 +68,32 @@ onMounted(() => {
         </v-data-table>
         <SnackBar v-model:snackbar="snackOpen" :text=snackText :color=snackColor />
     </l-block>
+
+    <!-- ダイアログ -->
+    <modal-view v-model="dialog" title="タスクの追加" color="bg-red-lighten-1">
+        <template #content>
+            <v-form ref='form'>
+                <v-row>
+                    <v-col cols="6">
+                        <v-text-field type="date" :rules="[required, dateValidator]" v-model="deadLine" label="期限" clearable></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row class="mb-1">
+                    <v-col cols="8">
+                        <v-text-field v-model="taskName" :rules="[required]" variant="outlined" label="タスク名" clearable></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-textarea v-model="taskDetail" variant="outlined" label="タスク詳細" clearable></v-textarea>
+            </v-form>
+        </template>
+        <template #button>
+            <v-row justify="center">
+                <v-col cols="auto" class="pt-0">
+                    <v-btn elevation="2" class="bg-red-lighten-1" @click="createTask">追加</v-btn>
+                </v-col>
+            </v-row>
+        </template>
+    </modal-view>
 </template>
 
 <style scoped>
@@ -69,7 +105,7 @@ onMounted(() => {
     display: inline-block;
 }
 
-::v-deep(.v-input__details) {
+::v-deep(.checkbox .v-input__details) {
     display: none !important;
 }
 </style>

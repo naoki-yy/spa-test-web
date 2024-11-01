@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from '@/plugins/axios'
-import { useRouter } from 'vue-router'
+import router from '@/router'
 
 interface User {
   id: number
@@ -35,7 +35,6 @@ export const useAuthStore = defineStore('auth', {
     },
     // ログイン
     async login(loginRequest: LoginForm) {
-      const router = useRouter()
       try {
         await axios.get('/sanctum/csrf-cookie', { withCredentials: true })
         const response = await axios.post('/login', loginRequest, { withCredentials: true })
@@ -47,18 +46,17 @@ export const useAuthStore = defineStore('auth', {
     },
     // ログアウト
     async logout() {
-      const router = useRouter()
       try {
         await axios.post('/logout')
         this.user = null
-        router.push({ name: 'top' })
+        await router.push({ name: 'top'})
       } catch (error) {
         console.error(error)
       }
     },
     // 登録処理
     async register(userData: RegisterForm) {
-      const router = useRouter()
+
       try {
         await axios.get('/sanctum/csrf-cookie', { withCredentials: true })
         const response = await axios.post('/register', userData, {

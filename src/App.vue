@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import TopLogo from '@/assets/TopLogo.png'
 import { useAuthStore } from './stores/auth';
 
@@ -9,6 +9,7 @@ const userName = computed(() => authStore.user?.name ?? 'ゲスト');
 const resource = ref({
   img: TopLogo
 })
+
 </script>
 
 <template>

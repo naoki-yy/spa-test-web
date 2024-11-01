@@ -46,8 +46,16 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
+
+  if (!authStore.user) {
+    try {
+      await authStore.fetchUser();
+    } catch (error) {
+      console.error('ユーザー情報の取得に失敗:', error);
+    }
+  }
 
   if (to.meta.requiresAuth && !authStore.user) {
     next({ name: 'top' })

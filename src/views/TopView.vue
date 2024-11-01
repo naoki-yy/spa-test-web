@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
+onMounted(() => {
+  if (sessionStorage.getItem('home-reloaded')) {
+    sessionStorage.removeItem('home-reloaded');
+  }
+});
 
 </script>
 <template>

@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import LBlock from '@/components/LBlock.vue';
 import detailButton from '@/components/detailButton.vue';
+import { onMounted } from 'vue';
 
+onMounted(() => {
+  if (!sessionStorage.getItem('home-reloaded')) {
+    sessionStorage.setItem('home-reloaded', 'true');
+    setTimeout(() => {
+      location.reload();
+    }, 200);
+  }
+});
 </script>
 
 <template>

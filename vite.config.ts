@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
-  base: '/spa-test-web/',
+  base: '/study-manage/',
   server: {
     host: true,
     port: 3000

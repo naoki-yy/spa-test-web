@@ -21,50 +21,72 @@ interface RegisterForm {
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null as User | null,
+    user: null as User | null
   }),
   actions: {
-    // ユーザ取得
+    // ユーザー取得
     async fetchUser() {
       try {
         const response = await axios.get('/user')
         this.user = response.data
-      } catch (error) {
+      } catch (error: any) {
         this.user = null
+        // 401エラーが発生したらログイン画面へリダイレクト
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem('token')
+          delete axios.defaults.headers.common['Authorization']
+          router.push({ name: 'login' })
+        }
       }
     },
     // ログイン
     async login(loginRequest: LoginForm) {
       try {
-        await axios.get('/sanctum/csrf-cookie', { withCredentials: true })
-        const response = await axios.post('/login', loginRequest, { withCredentials: true })
+        const response = await axios.post('/login', loginRequest)
+        const token = response.data.token
+        // トークンをローカルストレージに保存
+        localStorage.setItem('token', token)
+        // Axiosインスタンスのデフォルトヘッダーにトークンを設定
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
         this.user = response.data.user
+        router.push({ name: 'home' })
       } catch (error) {
         console.error(error)
+        this.user = null
         router.push({ name: 'login' })
       }
     },
     // ログアウト
     async logout() {
       try {
-        await axios.post('/logout')
-        this.user = null
-        await router.push({ name: 'top'})
+        // ユーザーが認証されている場合のみログアウトリクエストを送信
+        if (this.user) {
+          await axios.post('/logout')
+        }
       } catch (error) {
-        console.error(error)
+        console.error('ログアウトエラー:', error)
+      } finally {
+        // エラーハンドリング：トークンを削除してトップページへ遷移
+        localStorage.removeItem('token')
+        delete axios.defaults.headers.common['Authorization']
+        this.user = null
+        router.push({ name: 'top' })
       }
     },
     // 登録処理
     async register(userData: RegisterForm) {
-
       try {
-        await axios.get('/sanctum/csrf-cookie', { withCredentials: true })
-        const response = await axios.post('/register', userData, {
-          withCredentials: true
-        })
+        const response = await axios.post('/register', userData)
+        const token = response.data.token
+        // トークンをローカルストレージに保存
+        localStorage.setItem('token', token)
+        // Axiosインスタンスのデフォルトヘッダーにトークンを設定
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
         this.user = response.data.user
+        router.push({ name: 'home' })
       } catch (error) {
         console.error(error)
+        this.user = null
         router.push({ name: 'register' })
       }
     }

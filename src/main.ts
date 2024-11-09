@@ -7,6 +7,13 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import '@mdi/font/css/materialdesignicons.css';
 
+import axios from '@/plugins/axios';
+
+// アプリ起動時にトークンをAxiosのデフォルトヘッダーに設定
+const token = localStorage.getItem('token');
+if (token) {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
 
 const app = createApp(App)
 

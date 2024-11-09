@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
-  base: '/study-manage/',
+  base: './',
   server: {
     host: true,
     port: 3000

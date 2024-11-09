@@ -8,7 +8,6 @@ const axiosInstance = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json'
   },
-  withCredentials: true
 })
 
 // トークンの取得と設定（例として、ローカルストレージから取得）

@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   // baseURL: 'https://study-manage-api.kakeinokanri.site/api',
   timeout: 10000,
   headers: {

@@ -1,0 +1,38 @@
+name: Deploy Web to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0.3
+      with:
+        project_id: ${{ secrets.GCP_PROJECT }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Authenticate Docker to Artifact Registry
+      run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev
+
+    - name: Prepare environment file
+      run: cp .env.production .env
+
+    - name: Build and push Web Docker image
+      run: |
+        docker build --platform linux/amd64 -t asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/web-repo/web-image -f ./production-Dockerfile .
+        docker push asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/web-repo/web-image
+
+    - name: Deploy Web to Cloud Run
+      run: |
+        gcloud run deploy web-service \
+          --image asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/web-repo/web-image \
+          --region asia-northeast1 \
+          --allow-unauthenticated

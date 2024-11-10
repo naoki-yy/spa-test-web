@@ -13,5 +13,6 @@ const props = withDefaults(
 
 <template>
     <v-btn :color="color" elevation="2">
-        <v-icon class="pr-2">{{ props.button_icon }}</v-icon>{{ props.button_name }}</v-btn>
+        <v-icon class="pr-2">{{ props.button_icon }}</v-icon>{{ props.button_name }}
+    </v-btn>
 </template>

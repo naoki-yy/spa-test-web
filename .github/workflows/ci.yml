@@ -21,7 +21,7 @@ jobs:
           node-version: 16
           cache: 'npm'
       - run: npm ci
-      - run: npm run lint
+      - run: npm run lint -- --max-warnings=0
   Prettier:
     runs-on: ubuntu-latest
     timeout-minutes: 5

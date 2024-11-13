@@ -16,7 +16,7 @@ onMounted(() => {
 <template>
   <l-block title="Daily" subtitle="日々の確認画面">
     <template #button>
-      <detail-button />
+      <detail-button to="/" />
     </template>
     test
   </l-block>
@@ -24,7 +24,7 @@ onMounted(() => {
     <v-col>
       <l-block title="Timer" subtitle="今日の勉強時間">
         <template #button>
-          <detail-button />
+          <detail-button to="/" />
         </template>
         test
       </l-block>
@@ -32,7 +32,7 @@ onMounted(() => {
     <v-col>
       <l-block title="Task" subtitle="今日のタスク">
         <template #button>
-          <detail-button />
+          <detail-button to="/task" />
         </template>
         test
       </l-block>

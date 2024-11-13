@@ -15,6 +15,7 @@ interface Task {
 
 export const tasklist = () => {
   const tasks = ref<Task[]>([])
+  const checkingTasks = ref<Task[]>([])
   const snackOpen = ref(false)
   const snackText = ref('')
   const snackColor = ref('blue-lighten-1')
@@ -27,6 +28,15 @@ export const tasklist = () => {
     try {
       const response = await axios.get('/tasks')
       tasks.value = response.data.filter((task: Task) => task.check !== TaskType.Checked)
+    } catch (error) {
+      console.error('Error fetching tasks:', error)
+    }
+  }
+
+  const checkedTaskInit = async () => {
+    try {
+      const response = await axios.get('/tasks/checking')
+      checkingTasks.value = response.data
     } catch (error) {
       console.error('Error fetching tasks:', error)
     }
@@ -52,17 +62,17 @@ export const tasklist = () => {
         const submitTask = {
           name: taskName.value,
           detail: taskDetail.value,
-          deadLine: deadLine.value,
+          deadLine: deadLine.value
         }
-        await axios.post('/add/task', submitTask);
-        init();
+        await axios.post('/add/task', submitTask)
+        init()
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
 
       resetForm()
       dialog.value = false
-    } 
+    }
   }
 
   const resetForm = () => {
@@ -94,13 +104,35 @@ export const tasklist = () => {
     }
   }
 
+  const unCompleteTask = async (taskId: number) => {
+    try {
+      const response = await axios.post(`/task/unChecked/${taskId}`)
+      if (response.data) {
+        snackText.value = `「${response.data['task_name']}」を未完了にしました。`
+        snackOpen.value = true
+        snackColor.value = 'cyan-darken-1'
+        init()
+        checkedTaskInit()
+      } else {
+        snackText.value = '既にチェックが外されされています。'
+        snackOpen.value = true
+        snackColor.value = 'red-darken-1'
+      }
+    } catch (error) {
+      console.error('Error failed checked:', error)
+    }
+  }
+
   return {
     init,
     tasks,
+    checkingTasks,
+    checkedTaskInit,
     addTask,
     updated,
     deleted,
     completeTask,
+    unCompleteTask,
     snackOpen,
     snackText,
     snackColor,

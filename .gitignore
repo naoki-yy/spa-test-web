@@ -27,5 +27,6 @@ dist
 *.sln
 *.sw?
 .env
+.env.production
 
 *.tsbuildinfo
